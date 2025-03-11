@@ -33,6 +33,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.h2database:h2")
+    testImplementation("de.cronn:validation-file-assertions:0.7.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
