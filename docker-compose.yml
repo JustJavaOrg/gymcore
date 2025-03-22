@@ -37,7 +37,13 @@ services:
     depends_on:
       - postgres
 
-
+  # ✅ Add SMTP Service (MailHog for Testing)
+  mailhog:
+    image: mailhog/mailhog
+    container_name: gym-mailhog
+    ports:
+      - "1025:1025"   # SMTP Port
+      - "8025:8025"   # Web UI for viewing emails
 
 volumes:
   pgdata:
