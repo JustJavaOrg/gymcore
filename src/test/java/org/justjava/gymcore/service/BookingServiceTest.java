@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -55,6 +56,37 @@ class BookingServiceTest {
         assertEquals(100L, Objects.requireNonNull(bookingResult).getId());
 
         verify(bookingRepository).save(booking);
+    }
+
+    @Test
+    void createBooking_throwsBadRequestException_whenTrainerHasOverlappingBooking() {
+        User member = new User("Member", "member@example.com", UserRole.MEMBER, null);
+        member.setId(1L);
+
+        User trainer = new User("Trainer", "trainer@example.com", UserRole.TRAINER, null);
+        trainer.setId(2L);
+        GymClass gymClass = new GymClass(
+                "HIIT",
+                "High intensity training",
+                LocalDateTime.of(2025, 4, 20, 9, 0),
+                LocalDateTime.of(2025, 4, 20, 10, 0),
+                10,
+                trainer
+        );
+        gymClass.setId(11L);
+
+        Booking booking = new Booking(member, gymClass);
+
+        when(userRepository.findByUserIdAndUserRole(1L, UserRole.MEMBER)).thenReturn(member);
+        when(userRepository.findByUserIdAndUserRole(2L, UserRole.TRAINER)).thenReturn(trainer);
+        when(bookingRepository.findOverlappingTrainerBookings(eq(2L), any(), any()))
+                .thenReturn(List.of(new Booking()));
+
+        BadRequestException exception = assertThrows(BadRequestException.class, () -> {
+            bookingService.createBooking(booking);
+        });
+
+        assertEquals("Trainer is already booked during this time.", exception.getMessage());
     }
 
     @Test
