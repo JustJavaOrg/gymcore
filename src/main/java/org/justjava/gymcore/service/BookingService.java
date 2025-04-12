@@ -34,6 +34,7 @@ public class BookingService {
 
         validateUsers(booking);
         validateGymClassTimePeriod(booking);
+        validateTrainerAvailability(booking);
 
         GymClass gymClass = booking.getGymClass();
 
@@ -62,12 +63,18 @@ public class BookingService {
         return new ResponseEntity<>(new ResponseDetail("GymClass is full. You are now on the waitlist."), HttpStatus.OK);
     }
 
-    private boolean checkTimePeriodForTrainer(Booking booking) {
-        LocalDateTime bookingStartTime = booking.getGymClass().getScheduledAt();
-        LocalDateTime bookingEndTime = booking.getGymClass().getScheduleEnd();
-        boolean isTrainerAvailable = this.gymClassRepository.existsByUserIdAndBookingTimePeriod(booking.getGymClass().getTrainer().getId(), bookingStartTime, bookingEndTime);
-        return isTrainerAvailable;
+    private void validateTrainerAvailability(Booking booking) throws BadRequestException {
+        Long trainerId = booking.getGymClass().getTrainer().getId();
+        LocalDateTime start = booking.getGymClass().getScheduledAt();
+        LocalDateTime end = booking.getGymClass().getScheduleEnd();
+
+        List<Booking> overlappingBookings = bookingRepository.findOverlappingTrainerBookings(trainerId, start, end);
+
+        if (!overlappingBookings.isEmpty()) {
+            throw new BadRequestException("Trainer is already booked during this time.");
+        }
     }
+
 
     private void validateGymClassTimePeriod(Booking booking) throws BadRequestException {
         if (booking.getGymClass().getScheduledAt().isAfter(booking.getGymClass().getScheduleEnd()))
@@ -82,13 +89,6 @@ public class BookingService {
         User trainee = userRepository.findByUserIdAndUserRole(booking.getUser().getId(), UserRole.MEMBER);
         if (Objects.isNull(trainee))
             throw new BadRequestException("Member can not be found");
-    }
-
-    private void createGymClass(Booking booking) {
-        GymClass gymClass = new GymClass(booking.getGymClass().getTitle(), booking.getGymClass().getDescription(),
-                booking.getGymClass().getScheduledAt(), booking.getGymClass().getScheduleEnd(),
-                booking.getGymClass().getCapacity(), booking.getGymClass().getTrainer());
-        booking.setGymClass(gymClassRepository.save(gymClass));
     }
 
         public Optional<Booking> getBooking (Long id){
