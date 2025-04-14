@@ -22,13 +22,16 @@ public class User {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
+    private String password;
+
     @ManyToOne
     @JoinColumn(name = "membership_type_id")
     private MembershipType membershipType;
 
-    public User(String name, String email, UserRole role, MembershipType membershipType) {
+    public User(String name, String email, String password, UserRole role, MembershipType membershipType) {
         this.name = name;
         this.email = email;
+        this.password = password;
         this.role = role;
         this.membershipType = membershipType;
     }

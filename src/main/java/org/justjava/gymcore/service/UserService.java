@@ -14,9 +14,11 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+//    private final KeycloakAdminClientService keycloakAdminClientService;
 
     public User createUser(User user) {
         log.info("Creating new user");
+//        keycloakAdminClientService.addUser(user);
         return userRepository.save(user);
     }
 

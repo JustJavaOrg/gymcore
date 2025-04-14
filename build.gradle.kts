@@ -24,6 +24,14 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.flywaydb:flyway-core")
     implementation("org.flywaydb:flyway-database-postgresql")
+    // https://mvnrepository.com/artifact/org.keycloak/keycloak-admin-client
+    implementation("org.keycloak:keycloak-admin-client:26.0.4")
+    // https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-core-spi
+    implementation("org.jboss.resteasy:resteasy-core-spi:7.0.0.Beta1")
+    // https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-core
+    implementation("org.jboss.resteasy:resteasy-core:7.0.0.Beta1")
+    // https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-client
+    implementation("org.jboss.resteasy:resteasy-client:7.0.0.Beta1")
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testCompileOnly("org.projectlombok:lombok")
