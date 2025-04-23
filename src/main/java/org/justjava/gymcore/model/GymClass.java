@@ -20,13 +20,13 @@ public class GymClass {
     private String title;
     private String description;
 
-    @Column(name = "scheduled_at")
+    @Column(name = "start_time")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime scheduledAt;
+    private LocalDateTime startTime;
 
-    @Column(name = "schedule_end")
+    @Column(name = "end_time")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime scheduleEnd;
+    private LocalDateTime endTime;
 
     private int capacity;
 
@@ -34,11 +34,11 @@ public class GymClass {
     @JoinColumn(name = "trainer_id", nullable = false)
     private User trainer;
 
-    public GymClass(String title, String description, LocalDateTime scheduledAt, LocalDateTime scheduledEnd, int capacity, User trainer) {
+    public GymClass(String title, String description, LocalDateTime startTime, LocalDateTime endTime, int capacity, User trainer) {
         this.title = title;
         this.description = description;
-        this.scheduledAt = scheduledAt;
-        this.scheduleEnd = scheduledEnd;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.capacity = capacity;
         this.trainer = trainer;
     }
