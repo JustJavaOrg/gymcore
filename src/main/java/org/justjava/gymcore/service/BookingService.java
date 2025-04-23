@@ -26,7 +26,6 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
-    private final GymClassRepository gymClassRepository;
     private final WaitlistRepository waitlistRepository;
 
     public ResponseEntity<?> createBooking(Booking booking) throws BadRequestException {
@@ -62,13 +61,6 @@ public class BookingService {
         return new ResponseEntity<>(new ResponseDetail("GymClass is full. You are now on the waitlist."), HttpStatus.OK);
     }
 
-    private boolean checkTimePeriodForTrainer(Booking booking) {
-        LocalDateTime bookingStartTime = booking.getGymClass().getScheduledAt();
-        LocalDateTime bookingEndTime = booking.getGymClass().getScheduleEnd();
-        boolean isTrainerAvailable = this.gymClassRepository.existsByUserIdAndBookingTimePeriod(booking.getGymClass().getTrainer().getId(), bookingStartTime, bookingEndTime);
-        return isTrainerAvailable;
-    }
-
     private void validateGymClassTimePeriod(Booking booking) throws BadRequestException {
         if (booking.getGymClass().getScheduledAt().isAfter(booking.getGymClass().getScheduleEnd()))
             throw new BadRequestException("Time period is not valid.");
@@ -84,26 +76,19 @@ public class BookingService {
             throw new BadRequestException("Member can not be found");
     }
 
-    private void createGymClass(Booking booking) {
-        GymClass gymClass = new GymClass(booking.getGymClass().getTitle(), booking.getGymClass().getDescription(),
-                booking.getGymClass().getScheduledAt(), booking.getGymClass().getScheduleEnd(),
-                booking.getGymClass().getCapacity(), booking.getGymClass().getTrainer());
-        booking.setGymClass(gymClassRepository.save(gymClass));
+    public Optional<Booking> getBooking (Long id){
+        return bookingRepository.findById(id);
     }
 
-        public Optional<Booking> getBooking (Long id){
-            return bookingRepository.findById(id);
-        }
+    public List<Booking> getAllBookings () {
+        return bookingRepository.findAll();
+    }
 
-        public List<Booking> getAllBookings () {
-            return bookingRepository.findAll();
-        }
-
-        public Booking updateBooking (Long id, Booking bookingDetails){
-            checkIfBookingExists(id);
-            bookingDetails.setId(id);
-            return bookingRepository.save(bookingDetails);
-        }
+    public Booking updateBooking (Long id, Booking bookingDetails){
+        checkIfBookingExists(id);
+        bookingDetails.setId(id);
+        return bookingRepository.save(bookingDetails);
+    }
 
     private boolean isClassFull(GymClass gymClass) {
         long confirmedBookings = bookingRepository.countByGymClassId(gymClass.getId());
@@ -132,11 +117,10 @@ public class BookingService {
         }
     }
 
-
-        private void checkIfBookingExists (Long id){
-            if (!bookingRepository.existsById(id)) {
-                log.warn("Cannot proceed - Booking ID {} not found", id);
-                throw new IllegalArgumentException("Booking not found");
-            }
+    private void checkIfBookingExists (Long id){
+        if (!bookingRepository.existsById(id)) {
+            log.warn("Cannot proceed - Booking ID {} not found", id);
+            throw new IllegalArgumentException("Booking not found");
         }
     }
+}
