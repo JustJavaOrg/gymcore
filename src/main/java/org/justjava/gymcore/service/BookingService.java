@@ -63,14 +63,14 @@ public class BookingService {
     }
 
     private boolean checkTimePeriodForTrainer(Booking booking) {
-        LocalDateTime bookingStartTime = booking.getGymClass().getScheduledAt();
-        LocalDateTime bookingEndTime = booking.getGymClass().getScheduleEnd();
+        LocalDateTime bookingStartTime = booking.getGymClass().getStartTime();
+        LocalDateTime bookingEndTime = booking.getGymClass().getEndTime();
         boolean isTrainerAvailable = this.gymClassRepository.existsByUserIdAndBookingTimePeriod(booking.getGymClass().getTrainer().getId(), bookingStartTime, bookingEndTime);
         return isTrainerAvailable;
     }
 
     private void validateGymClassTimePeriod(Booking booking) throws BadRequestException {
-        if (booking.getGymClass().getScheduledAt().isAfter(booking.getGymClass().getScheduleEnd()))
+        if (booking.getGymClass().getStartTime().isAfter(booking.getGymClass().getEndTime()))
             throw new BadRequestException("Time period is not valid.");
     }
 
@@ -86,7 +86,7 @@ public class BookingService {
 
     private void createGymClass(Booking booking) {
         GymClass gymClass = new GymClass(booking.getGymClass().getTitle(), booking.getGymClass().getDescription(),
-                booking.getGymClass().getScheduledAt(), booking.getGymClass().getScheduleEnd(),
+                booking.getGymClass().getStartTime(), booking.getGymClass().getEndTime(),
                 booking.getGymClass().getCapacity(), booking.getGymClass().getTrainer());
         booking.setGymClass(gymClassRepository.save(gymClass));
     }
