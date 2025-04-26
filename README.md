@@ -1,4 +1,5 @@
 # Welcome to GymCore
+[![Build](https://github.com/JustJavaOrg/gymcore/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JustJavaOrg/gymcore/actions/workflows/CI.yml)
 ## _A Just Java Project_ ☕
 
 GymCore is a simple RESTful API for managing gym members and their subscriptions.

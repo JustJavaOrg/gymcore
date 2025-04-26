@@ -11,10 +11,10 @@ public interface GymClassRepository extends JpaRepository<GymClass, Long> {
     @Query("""
     select count(g) = 0 from GymClass g
     where g.trainer.id = :userId
-    and (g.scheduledAt <= :scheduleEnd
-    and g.scheduleEnd >= :scheduledAt)
+    and (g.startTime <= :endTime
+    and g.endTime >= :startTime)
     """)
     boolean existsByUserIdAndBookingTimePeriod(@Param("userId") Long userId,
-                                               @Param("scheduledAt") LocalDateTime scheduledAt,
-                                               @Param("scheduleEnd") LocalDateTime scheduleEnd);
+                                               @Param("startTime") LocalDateTime startTime,
+                                               @Param("endTIme") LocalDateTime endTIme);
 }

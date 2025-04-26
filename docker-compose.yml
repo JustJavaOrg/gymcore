@@ -1,9 +1,10 @@
 services:
   postgres:
-    image: postgres:17.4-alpine
+    image: postgres:17.2
     container_name: gym-postgres
     environment:
       POSTGRES_DB: gymdb
+      PGDATABASE: gymdb # client tools default to gymdb on connect
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
       PG_INIT_SCRIPT: /docker-entrypoint-initdb.d/init.sql
@@ -15,27 +16,27 @@ services:
     networks:
       - gym_network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U keycloak" ]
+      test: ["CMD-SHELL", "pg_isready -U admin"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
   keycloak:
-    image: keycloak/keycloak:latest
+    image: keycloak/keycloak:21.0.1  # Pin to a stable version
     container_name: gym-keycloak
 
     networks:
       - gym_network
     environment:
-      KC_HEALTH_ENABLED: true
-      KC_METRICS_ENABLED: true
-      KC_HTTP_ENABLED: true
-      KC_HOSTNAME_STRICT_HTTPS: false
-      KEYCLOAK_SSL_REQUIRED: none
-      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KEYCLOAK_SSL_REQUIRED: "none"
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "false"
       KC_HOSTNAME: localhost
-      KC_HOSTNAME_PORT: 8080
+      KC_HOSTNAME_PORT: "8080"
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://gym-postgres/gymdb
       KC_DB_USERNAME: admin
@@ -54,14 +55,21 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
-
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - keycloak_data:/opt/keycloak/data  # Persist Keycloak data
 
 volumes:
   pgdata:
+  keycloak_data:
 
 networks:
   gym_network:
     driver: bridge
+
 
 

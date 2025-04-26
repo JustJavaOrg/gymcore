@@ -37,12 +37,28 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.skyscreamer:jsonassert")
     testImplementation("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("net.bytebuddy:byte-buddy-agent") // Byte-Buddy agent so Mockito can use the inline mock‐maker without self-attach
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+
+    doFirst { // Before the JVM forks, find the byte-buddy agent on the classpath and add it as a javaagent
+        val agentJar = configurations
+            .getByName("testRuntimeClasspath")
+            .files
+            .find { it.name.contains("byte-buddy-agent") }
+
+        agentJar?.let {
+            jvmArgs(
+                "-javaagent:${it.absolutePath}",
+                "-XX:+EnableDynamicAgentLoading"
+            )
+        }
+    }
 }
 
 tasks.test {
