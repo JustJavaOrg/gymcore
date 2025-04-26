@@ -1,5 +1,6 @@
 package org.justjava.gymcore.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.justjava.gymcore.model.User;
@@ -19,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
         log.info("Received request to create a user");
         User created = userService.createUser(user);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -40,7 +41,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
         log.info("Received request to update user with ID: {}", id);
         try {
             User updated = userService.updateUser(id, user);
