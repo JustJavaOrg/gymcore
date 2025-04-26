@@ -33,7 +33,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     testCompileOnly("org.projectlombok:lombok")
     testAnnotationProcessor("org.projectlombok:lombok")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0") // Version must be specified explicitly
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6") // Version must be specified explicitly
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
