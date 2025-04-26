@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.justjava.gymcore.model.UserRole;
 import org.keycloak.admin.client.Keycloak;
+import org.keycloak.admin.client.resource.ClientsResource;
 import org.keycloak.representations.idm.ClientRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
@@ -113,24 +114,31 @@ public class KeycloakInitializer {
 
     private void createClients() {
         // frontend client
-        ClientRepresentation frontEndClient = getFrontEndClient();
-        try (Response response = keycloak.realm(realm).clients().create(frontEndClient)) {
-            // optionally process the response
-            handleClientCreationResponse(response, "frontend client");
-        } catch (Exception e){
-            log.error("failed to create frontend client: {}", e.getMessage());
-            throw new RuntimeException("Failed to create frontend client", e);
+        ClientsResource clientsResource = keycloak.realm(realm).clients();
+        ClientRepresentation frontEndClientRepresentation = clientsResource.findByClientId(frontendClientId).stream().findFirst().orElse(null);
+        if(frontEndClientRepresentation == null) {
+            ClientRepresentation frontEndClient = getFrontEndClient();
+            try (Response response = keycloak.realm(realm).clients().create(frontEndClient)) {
+                // optionally process the response
+                handleClientCreationResponse(response, "frontend client");
+            } catch (Exception e) {
+                log.error("failed to create frontend client: {}", e.getMessage());
+                throw new RuntimeException("Failed to create frontend client", e);
+            }
         }
 
-        // bearer-only client
-        ClientRepresentation bearerOnlyClient = getBearerOnlyClient();
+        ClientRepresentation bearerOnlyClientRepresentation = clientsResource.findByClientId(bearerOnlyClientId).stream().findFirst().orElse(null);
 
-        // Add to Keycloak
-        try (Response response = keycloak.realm(realm).clients().create(bearerOnlyClient)) {
-            handleClientCreationResponse(response, "bearer-only client");
-        } catch (Exception e) {
-            log.error("Failed to create bearer-only client: {}", e.getMessage());
-            throw new RuntimeException("failed to create bearer-only client", e);
+        if (bearerOnlyClientRepresentation == null){// bearer-only client
+            ClientRepresentation bearerOnlyClient = getBearerOnlyClient();
+
+            // Add to Keycloak
+            try (Response response = keycloak.realm(realm).clients().create(bearerOnlyClient)) {
+                handleClientCreationResponse(response, "bearer-only client");
+            } catch (Exception e) {
+                log.error("Failed to create bearer-only client: {}", e.getMessage());
+                throw new RuntimeException("failed to create bearer-only client", e);
+            }
         }
     }
 

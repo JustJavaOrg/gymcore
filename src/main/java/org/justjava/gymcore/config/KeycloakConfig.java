@@ -57,9 +57,6 @@ public class KeycloakConfig {
                         .build())
                 .build();
     }
-
-
-
 }
 
 

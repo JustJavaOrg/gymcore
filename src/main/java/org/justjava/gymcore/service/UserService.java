@@ -14,12 +14,20 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-//    private final KeycloakAdminClientService keycloakAdminClientService;
+    private final KeycloakService
+            keycloakService;
 
     public User createUser(User user) {
         log.info("Creating new user");
-//        keycloakAdminClientService.addUser(user);
-        return userRepository.save(user);
+        User newUser;
+        try {
+            newUser = userRepository.save(user);
+            keycloakService.addUser(newUser);
+        } catch (Exception e) {
+            log.error("Error creating new user", e);
+            throw new RuntimeException("Error creating new user");
+        }
+        return newUser;
     }
 
     public Optional<User> getUser(Long id) {
@@ -32,13 +40,27 @@ public class UserService {
 
     public User updateUser(Long id, User userDetails) {
         checkIfBookingExists(id);
-        userDetails.setId(id);
-        return userRepository.save(userDetails);
+        User updatedUser;
+        try {
+            userDetails.setId(id);
+            updatedUser = userRepository.save(userDetails);
+            keycloakService.updateUser(id.toString(), updatedUser);
+        } catch (Exception e) {
+            log.error("Error updating user", e);
+            throw new RuntimeException("Error updating user");
+        }
+        return updatedUser;
     }
 
     public void deleteUser(Long id) {
         checkIfBookingExists(id);
-        userRepository.deleteById(id);
+        try {
+            userRepository.deleteById(id);
+            keycloakService.deleteUser(id.toString());
+        } catch (Exception e) {
+            log.error("Error deleting user", e);
+            throw new RuntimeException("Error deleting user");
+        }
     }
 
     private void checkIfBookingExists(Long id) {
