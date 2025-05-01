@@ -28,7 +28,7 @@ public class KeycloakService {
     @Value("${keycloak.realm}")
     public String realm;
 
-    public void     addUser(User user) {
+    public void addUser(User user) {
 
         UsersResource usersResource = keycloak.realm(realm).users();
 

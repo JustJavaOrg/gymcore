@@ -27,6 +27,9 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    @Mock
+    private KeycloakService keycloakService;
+
     @Test
     void createUser_savesUser() {
         var user = new User("Alice", "alice@example.com", UserRole.MEMBER, null);
