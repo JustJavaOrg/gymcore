@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "membership_type", schema = "gym_app")
+@Table(name = "membership_type")
 @Data
 @NoArgsConstructor
 public class MembershipType {

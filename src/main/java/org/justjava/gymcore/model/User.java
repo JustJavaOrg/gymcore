@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import java.util.Objects;
 
 @Entity
-@Table(name = "users", schema = "gym_app")
+@Table(name = "users")
 @Data
 @NoArgsConstructor
 public class User {

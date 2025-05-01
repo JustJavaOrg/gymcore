@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "classes", schema = "gym_app")
+@Table(name = "classes")
 @Data
 @NoArgsConstructor
 public class GymClass {

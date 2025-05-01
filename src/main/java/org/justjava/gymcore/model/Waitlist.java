@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "waitlists", schema = "gym_app")
+@Table(name = "waitlists")
 @Data
 public class Waitlist {
 
