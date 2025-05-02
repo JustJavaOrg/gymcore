@@ -1,6 +1,7 @@
 package org.justjava.gymcore.config;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -77,7 +78,7 @@ public class KeycloakInitializer {
         try {
             keycloak.realm(realm).toRepresentation();
             log.info("Realm {} already exists", realm);
-        } catch (Exception e) {
+        } catch (NotFoundException e) {
             log.info("Creating realm {}", realm);
             RealmRepresentation realmRepresentation = new RealmRepresentation();
             realmRepresentation.setRealm(realm);
