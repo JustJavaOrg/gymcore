@@ -43,6 +43,8 @@ class UserServiceTest {
         assertEquals("Alice", result.getName());
 
         verify(userRepository).save(user);
+        // Ensure user provisioning is delegated to Keycloak
+        verify(keycloakService).addUser(user);
     }
 
     @Test
