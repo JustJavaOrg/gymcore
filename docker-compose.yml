@@ -4,22 +4,30 @@ services:
     container_name: gym-postgres
     environment:
       POSTGRES_DB: gymdb
-      PGDATABASE: gymdb # client tools default to gymdb on connect
+      PGDATABASE: gymdb # client tools default to gymdb on connecting
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
+      PG_INIT_SCRIPT: /docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - gym_network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U admin"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
   keycloak:
-    image: keycloak/keycloak:21.0.1  # Pin to a stable version
+    image: keycloak/keycloak:26.2.1  # Pin to a stable version
     container_name: gym-keycloak
+
+    networks:
+      - gym_network
     environment:
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
@@ -33,13 +41,17 @@ services:
       KC_DB_URL: jdbc:postgresql://gym-postgres/gymdb
       KC_DB_USERNAME: admin
       KC_DB_PASSWORD: admin
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB_INITIALIZE: true  # Force table creation
+      KC_DB_SCHEMA: gym_keycloak    # Default PostgreSQL schema
+      JGROUPS_DISABLE_JDBC_PING: true  # Disable problematic cluster ping
     ports:
       - "8100:8080"
       - "9000:9000"
-    command:
-      - start-dev
+    command: ["start-dev", "--debug"]
+#      - start-dev
+#      - start
     depends_on:
       postgres:
         condition: service_healthy
@@ -54,3 +66,10 @@ services:
 volumes:
   pgdata:
   keycloak_data:
+
+networks:
+  gym_network:
+    driver: bridge
+
+
+
