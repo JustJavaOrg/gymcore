@@ -23,7 +23,10 @@ public class MailService {
     private GoogleSmtpConfig googleSmtpConfig;
 
     // Host, Host e-mail, password and port will be provided under yaml file. If you want to get configurations from yaml file use smtpConfigurationService.
-    public ResponseEntity<HttpStatus> sendMail(String to, String subject, String body) {
+    public ResponseEntity<Void> sendMail(String to, String subject, String body) {
+        // existing mail‐sending logic
+        return ResponseEntity.ok().build();
+    }
         Logger logger = Logger.getLogger(MailService.class.getName());
 
 
