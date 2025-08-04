@@ -41,7 +41,7 @@ public class MailService {
             }
         };
 
-        Session session = Session.getDefaultInstance(props, authenticator);
+        Session session = Session.getInstance(props, authenticator);
 
         try {
             Message message = new MimeMessage(session);
