@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/mail")
 public class MailController {
 
-    @Autowired
-    private MailService mailService;
+    private final MailService mailService;
+
+    public MailController(MailService mailService) {
+        this.mailService = mailService;
+    }
 
     @PostMapping("/sendMail/{to}")
     public ResponseEntity<HttpStatus> sendMail(@PathVariable("to") String to, @RequestBody MailModel mailModel) {
