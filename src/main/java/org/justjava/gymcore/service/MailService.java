@@ -6,24 +6,19 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.justjava.gymcore.config.smtp.GoogleSmtpConfig;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MailService {
-    @Autowired
+
     private GoogleSmtpConfig googleSmtpConfig;
 
     // Host, Host e-mail, password and port will be provided under yaml file. If you want to get configurations from yaml file use smtpConfigurationService.
-    public ResponseEntity<HttpStatus> sendMail(String to, String subject, String body) {
+    public void sendMail(String to, String subject, String body) throws MessagingException {
 
         Properties props = new Properties();
         props.put("mail.transport.protocol", "smtp");
@@ -40,8 +35,6 @@ public class MailService {
         };
 
         Session session = Session.getInstance(props, authenticator);
-
-        try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(googleSmtpConfig.getUsername()));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
@@ -50,10 +43,5 @@ public class MailService {
 
             Transport.send(message);
             log.info("Email sent successfully to: {}", to);
-        } catch (MessagingException e) {
-            log.error("Failed to send email to {}: {}", to, e.getMessage(), e);;
-        }
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
