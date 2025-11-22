@@ -1,6 +1,8 @@
 package org.justjava.gymcore.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -43,6 +45,7 @@ public class User {
     private MembershipType membershipType;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @JsonIgnore
     private List<Booking> bookings = new ArrayList<>();
 
     public User(String name, String email, UserRole role, MembershipType membershipType) {
